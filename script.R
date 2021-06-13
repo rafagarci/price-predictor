@@ -3,6 +3,18 @@ if(!require("rugarch")){
     install.packages("rugarch")
     library("rugarch")
 }
+if(!require("R.utils")){
+    install.packages("R.utils")
+    library("R.utils")
+}
+if(!require("grDevices")){
+    install.packages("grDevices")
+    library("grDevices")
+}
+if(!require("imguR")){
+    install.packages("imguR")
+    library("imguR")
+}
 
 # Import https://gist.github.com/ivannp/5198580
 # source("./5198580/garchAuto.R")
@@ -58,8 +70,31 @@ fit = tryCatch(
         error=function(e) e, warning=function(w) w
 )
 
-# forecast
-# ugarchforecast(fit, n.ahead = 50)
-
 # Create model diagnostic plots
-plot(fit)
+# pdf("./Rplots.pdf")
+# plot(fit)
+# dev.off()
+
+# Clear terminal, meant to be used on linux
+system("clear")
+
+# forecast
+n = as.numeric(commandArgs()[6])
+result = ugarchforecast(fit, n.ahead = n)
+mu = fitted(result)
+sig = sigma(result)
+Tplus = c()
+for(i in 1:n){
+    Tplus = c(Tplus, paste("T+", i, sep = ""))
+}
+
+# Percentage changes
+percent = data.frame(Series = exp(mu))
+colnames(percent) = c("% Change")
+
+# Print all values
+print("Log returns forecast")
+print(result)
+print("Estimated real value percentage change")
+print(percent)
+
