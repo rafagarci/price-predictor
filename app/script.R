@@ -1,7 +1,16 @@
-library("rugarch")
-library("R.utils")
-library("grDevices")
-library("imguR")
+# Load packages
+if(!require("rugarch")){
+    install.packages("rugarch")
+    library("rugarch")
+}
+if(!require("R.utils")){
+    install.packages("R.utils")
+    library("R.utils")
+}
+if(!require("grDevices")){
+    install.packages("grDevices")
+    library("grDevices")
+}
 
 # Import https://gist.github.com/ivannp/5198580
 # source("./5198580/garchAuto.R")
