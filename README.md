@@ -11,3 +11,10 @@ Rscript script.R n
 ```
 
 where `n` is the number of ahead values to predict.
+
+## Running in docker
+
+Build and start the container with:
+```
+docker-compose up
+```
