@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  predictor:
+    image: predictor
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    volumes:
+      - "./app:/app/predictor"
+    entrypoint: /bin/sh
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
