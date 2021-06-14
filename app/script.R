@@ -1,22 +1,13 @@
 # Load packages
-if(!require("rugarch")){
-    install.packages("rugarch")
-    library("rugarch")
-}
-if(!require("R.utils")){
-    install.packages("R.utils")
-    library("R.utils")
-}
-if(!require("grDevices")){
-    install.packages("grDevices")
-    library("grDevices")
-}
+library("rugarch")
+library("R.utils")
+library("grDevices")
 
 # Import https://gist.github.com/ivannp/5198580
 # source("./5198580/garchAuto.R")
 
 # Get BitCoin data
-if(system("python3 script.py")!= 0){
+if(!file.exists("data.csv") &&  system("python3 script.py")!= 0){
     stop("Error while getting data")
 }
 
