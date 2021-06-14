@@ -3,6 +3,18 @@ if(!require("rugarch")){
     install.packages("rugarch")
     library("rugarch")
 }
+if(!require("R.utils")){
+    install.packages("R.utils")
+    library("R.utils")
+}
+if(!require("grDevices")){
+    install.packages("grDevices")
+    library("grDevices")
+}
+if(!require("imguR")){
+    install.packages("imguR")
+    library("imguR")
+}
 
 # Import https://gist.github.com/ivannp/5198580
 # source("./5198580/garchAuto.R")
@@ -21,12 +33,12 @@ DATA = data.frame(time = DATA$time, log.returns = log(DATA$close/DATA$open))
 # https://www.quantstart.com/articles/ARIMA-GARCH-Trading-Strategy-on-the-SP500-Stock-Market-Index-Using-R/
 final.aic <- Inf
 final.order <- c(0,0,0)
-for (p in 0:5) for (q in 0:5) {
+for (p in 0:5) for (q in 0:5) for (d in 0:2){
     if ( p == 0 && q == 0) {
         next
     }
 
-    arimaFit = tryCatch( arima(DATA$log.returns, order=c(p, 0, q)),
+    arimaFit = tryCatch( arima(DATA$log.returns, order=c(p, d, q)),
                         error=function( err ) FALSE,
                         warning=function( err ) FALSE )
 
@@ -34,7 +46,7 @@ for (p in 0:5) for (q in 0:5) {
         current.aic <- AIC(arimaFit)
         if (current.aic < final.aic) {
             final.aic <- current.aic
-            final.order <- c(p, 0, q)
+            final.order <- c(p, d, q)
             final.arima <- arima(DATA$log.returns, order=final.order)
         }
     } else {
@@ -48,6 +60,9 @@ spec = ugarchspec(
             mean.model=list(armaOrder=c(final.order[1], final.order[3]), include.mean=T),
             distribution.model="sged")
 
+# Take difference of values to add parameter d to ARMA model.
+# DATA2 = diff(DATA$log.returns, final.order[2])
+
 fit = tryCatch(
         ugarchfit(
             spec, DATA$log.returns, solver = 'hybrid'
@@ -55,5 +70,31 @@ fit = tryCatch(
         error=function(e) e, warning=function(w) w
 )
 
+# Create model diagnostic plots
+# pdf("./Rplots.pdf")
+# plot(fit)
+# dev.off()
+
+# Clear terminal, meant to be used on linux
+system("clear")
+
 # forecast
-ugarchforecast(fit, n.ahead = 50)
+n = as.numeric(commandArgs()[6])
+result = ugarchforecast(fit, n.ahead = n)
+mu = fitted(result)
+sig = sigma(result)
+Tplus = c()
+for(i in 1:n){
+    Tplus = c(Tplus, paste("T+", i, sep = ""))
+}
+
+# Percentage changes
+percent = data.frame(Series = exp(mu))
+colnames(percent) = c("% Change")
+
+# Print all values
+print("Log returns forecast")
+print(result)
+print("Estimated real value percentage change")
+print(percent)
+
