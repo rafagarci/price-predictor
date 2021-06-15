@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   predictor:
-    image: predictor
+    image: cerco/predictor:latest
     build:
       context: ./docker
       dockerfile: Dockerfile
