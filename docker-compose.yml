@@ -3,9 +3,6 @@ version: "3.7"
 services:
   predictor:
     image: cerco/predictor:latest
-    build:
-      context: ./docker
-      dockerfile: Dockerfile
     volumes:
       - "./app:/app/predictor"
     working_dir: /app/predictor
